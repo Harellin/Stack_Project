@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
-project(untitled)
+project(Project2)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(untitled main.cpp)
+add_library(myStack.h)
+add_executable(Project2 main.cpp)
