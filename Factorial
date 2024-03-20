@@ -1,0 +1,30 @@
+FACT
+    PUSHR NUM
+    PUSHR NEED
+    JB RES
+
+    PUSHR NUM
+    PUSHR NUM
+    PUSH 1
+    ADD
+    POPR NUM
+    CALL FUNC
+
+    PUSHR ANS
+    MUL
+    POPR ANS
+    RET
+
+RES
+    RET
+
+BEGIN
+    IN
+    POPR NEED
+    PUSH 1
+    POPR ANS
+    PUSH 1
+    POPR NUM
+    CALL FACT
+    OUT
+END

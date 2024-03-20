@@ -1,19 +1,28 @@
 #include <iostream>
-#include "myStack.h"
-
-using namespace myStack;
+#include "parser.h"
 
 int main() {
-    Stack<int> stack;
 
-    stack.push(5);
-    stack.push(10);
+    std::string curfile;
+    std::cin >> curfile;
+    std::ifstream file;
+    file.open(curfile);
 
-    std::cout << "Top element: " << stack.top() << std::endl;
+    try{
+        std::vector<Token> tokens = FileParser(file);
+        State curState;
+        std::vector<Command *> vec_command;
+        int begin = vectorCommand(tokens, vec_command, curState);
+        curState.SetPos(begin);
 
-    stack.pop();
-
-    std::cout << "Top element after pop: " << stack.top() << std::endl;
+        while (curState.CanNext(vec_command.size())) {
+            Next(vec_command, curState);
+        }
+    }  catch (ParserExeption& error) {
+        std::cout << error.what();
+    } catch (StateExeption& error) {
+        std::cout << error.what();
+    }
 
     return 0;
 }
