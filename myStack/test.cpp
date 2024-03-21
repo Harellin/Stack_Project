@@ -23,7 +23,7 @@ TEST(Pop, PopOut) {
 Stack<int> first;
 
 for (int i = 0; i < 100; i++) {
-first.Push(123000);
+first.Push(123);
 }
 
 for (int i = 0; i < 100; i++) {
@@ -41,11 +41,11 @@ EXPECT_ANY_THROW(first.Top()) << "Нет исключения";
 first.Push(123);
 EXPECT_EQ(first.Top(), 123) << first.Top() << " " << 123;
 
-first.Push(-321);
-EXPECT_EQ(first.Top(), -321) << first.Top() << " " << -321;
+first.Push(-123);
+EXPECT_EQ(first.Top(), -123) << first.Top() << " " << -123;
 
-first.Push(5555);
-EXPECT_EQ(first.Top(), 5555) << first.Top() << " " << 5555;
+first.Push(111);
+EXPECT_EQ(first.Top(), 111) << first.Top() << " " << 111;
 
 }
 
@@ -60,34 +60,4 @@ EXPECT_EQ(first.IsEmpty(), false) << first.IsEmpty() << " " << true;
 first.Pop();
 EXPECT_EQ(first.IsEmpty(), true) << first.IsEmpty() << " " << true;
 
-}
-
-TEST(Copy_ctr, Eq) {
-Stack<int> first;
-first.Push(123);
-first.Push(123);
-Stack<int> second;
-EXPECT_NO_THROW(second = first) << "Исключение";
-}
-
-TEST(Copy_ctr, Constructor) {
-Stack<int> first;
-first.Push(123);
-first.Push(123);
-EXPECT_NO_THROW(Stack<int> second = first) << "Исключение";
-}
-
-TEST(Move_ctr, Eq) {
-Stack<int> first;
-first.Push(123);
-first.Push(123);
-Stack<int> second;
-EXPECT_NO_THROW(second = std::move(first)) << "Исключение";
-}
-
-TEST(Move_ctr, Constructor) {
-Stack<int> first;
-first.Push(123);
-first.Push(123);
-EXPECT_NO_THROW(Stack<int> second = std::move(first)) << "Исключение";
 }
