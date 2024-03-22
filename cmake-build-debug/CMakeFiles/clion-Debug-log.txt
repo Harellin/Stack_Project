@@ -10,12 +10,9 @@ CMake Warning (dev) at D:/clion/CLion 2023.1.4/bin/cmake/win/x64/share/cmake-3.2
   DOWNLOAD_EXTRACT_TIMESTAMP option with a value of true to avoid this
   robustness issue.
 Call Stack (most recent call first):
-  CMakeLists.txt:14 (FetchContent_Declare)
+  myStack/CMakeLists.txt:15 (FetchContent_Declare)
 This warning is for project developers.  Use -Wno-dev to suppress it.
 
-CMake Error at CMakeLists.txt:24 (add_executable):
-  The target name "test" is reserved when CTest testing is enabled.
-
-
--- Configuring incomplete, errors occurred!
-See also "C:/Users/kusdi/CLionProjects/Project2/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/kusdi/CLionProjects/Project2/cmake-build-debug

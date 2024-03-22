@@ -1,58 +1,7 @@
 #ifndef PROJECT2_COMMAND_H
 #define PROJECT2_COMMAND_H
 
-#include<iostream>
-#include <map>
-#include<vector>
-#include <string>
-#include "myStack/myStack.h"
-
-class State {
-public:
-    bool isgoing = false;
-    std::vector<myStack::Stack<int>> stack;
-    std::map<std::string, int> registers;
-    std::map<std::string, int> functions;
-    std::vector<int> position;
-
-    void Start();
-
-    bool isStart();
-
-    void SetPos(int pos);
-
-    void End();
-
-    void Push(int value);
-
-    void Pop();
-
-    int Top();
-
-    int GetReg(std::string reg);
-
-    void WriteReg(std::string reg, int value);
-
-    void PushFunction(std::string function, int pos);
-
-    void GoTo(std::string function);
-
-    void Call(std::string function);
-
-    void Ret();
-
-    bool CanNext(int size);
-};
-
-class StateExeption {
-public:
-    StateExeption(const std::string& message) : message_(message){}
-    virtual std::string what() {
-        return message_;
-    }
-private:
-    std::string message_;
-};
+#include "State.h"
 
 class Command{
 public:
@@ -60,7 +9,7 @@ public:
     virtual std::string name() = 0;
 };
 
-void Next(std::vector<Command * > & vec_command, State & all) {
+void Next(std::vector<std::shared_ptr<Command>> & vec_command, State & all) {
     vec_command[all.position.back()] -> execute(all);
     all.position[all.position.size() - 1] += 1;
 }
@@ -69,8 +18,8 @@ class Begin: public Command{
 public:
     virtual void execute(State &curState) override {
         if(curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
-        }
+            throw StateException{"The process has already been begun"};
+            };
         curState.Start();
     }
     std::string name() override {
@@ -82,7 +31,7 @@ class End: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been ended"};
+            throw StateException{"The process has already been ended"};
         }
         curState.End();
     }
@@ -97,7 +46,7 @@ public:
     Push(int value):value(value){}
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         curState.Push(value);
     }
@@ -110,7 +59,7 @@ class Pop: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         curState.Pop();
     }
@@ -125,7 +74,7 @@ public:
     PushR(std::string reg):reg(reg){}
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         curState.Push(curState.GetReg(reg));
     }
@@ -140,7 +89,7 @@ public:
     PopR(std::string reg):reg(reg){}
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         curState.WriteReg(reg, curState.Top());
         curState.Pop();
@@ -154,7 +103,7 @@ class Add: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         int first = curState.Top();
         curState.Pop();
@@ -171,7 +120,7 @@ class Sub: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         int first = curState.Top();
         curState.Pop();
@@ -188,7 +137,7 @@ class Mul: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         int first = curState.Top();
         curState.Pop();
@@ -205,7 +154,7 @@ class Div: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         int first = curState.Top();
         curState.Pop();
@@ -222,7 +171,7 @@ class Out: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         int value = curState.Top();
         curState.Pop();
@@ -237,7 +186,7 @@ class In: public Command{
 public:
     virtual void execute(State &curState) override {
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         int value;
         std::cin >> value;
@@ -253,68 +202,38 @@ public:
     std::string type, process;
     GoTo(std::string type, std::string label): type(type), process(process) {}
     virtual void execute(State &curState) override {
+        int first = curState.Top();
+        curState.Pop();
+        int second = curState.Top();
+        curState.Pop();
+        curState.Push(second);
+        curState.Push(first);
         if(!curState.isStart()) {
-            throw StateExeption{"The process has already been begun"};
+            throw StateException{"The process has already been begun"};
         }
         if(type == "JMP") {
             curState.GoTo(process);
         } else if(type == "JEQ") {
-            int first = curState.Top();
-            curState.Pop();
-            int second = curState.Top();
-            curState.Pop();
-            curState.Push(second);
-            curState.Push(first);
             if(first == second) {
                 curState.GoTo(process);
             }
         } else if(type == "JNE") {
-            int first = curState.Top();
-            curState.Pop();
-            int second = curState.Top();
-            curState.Pop();
-            curState.Push(second);
-            curState.Push(first);
             if(first != second) {
                 curState.GoTo(process);
             }
         } else if(type == "JA") {
-            int first = curState.Top();
-            curState.Pop();
-            int second = curState.Top();
-            curState.Pop();
-            curState.Push(second);
-            curState.Push(first);
             if(first > second) {
                 curState.GoTo(process);
             }
         } else if(type == "JAE") {
-            int first = curState.Top();
-            curState.Pop();
-            int second = curState.Top();
-            curState.Pop();
-            curState.Push(second);
-            curState.Push(first);
             if(first >= second) {
                 curState.GoTo(process);
             }
         } else if(type == "JB") {
-            int first = curState.Top();
-            curState.Pop();
-            int second = curState.Top();
-            curState.Pop();
-            curState.Push(second);
-            curState.Push(first);
             if(first < second) {
                 curState.GoTo(process);
             }
         } else if(type == "JBE") {
-            int first = curState.Top();
-            curState.Pop();
-            int second = curState.Top();
-            curState.Pop();
-            curState.Push(second);
-            curState.Push(first);
             if (first <= second) {
                 curState.GoTo(process);
             }
@@ -325,13 +244,21 @@ public:
     }
 };
 
+class JMP: public GoTo{
+public:
+    std::string type, process;
+    virtual void execute(State &curState) override {
+        curState.GoTo(process);
+    }
+};
+
 class Call: public Command{
 public:
     std::string process;
     Call(std::string process):process(process){}
     virtual void execute(State &curState) override {
         if (!curState.isStart()) {
-            throw StateExeption{"The process is not started"};
+            throw StateException{"The process is not started"};
         }
         curState.Call(process);
     }
@@ -344,7 +271,7 @@ class Ret: public Command{
 public:
     virtual void execute(State &curState) override {
         if (!curState.isStart()) {
-            throw StateExeption{"The process is not started"};
+            throw StateException{"The process is not started"};
         }
         curState.Ret();
     }
@@ -393,7 +320,7 @@ void State::WriteReg(std::string reg, int value) {
 
 void State::PushFunction(std::string function, int pos) {
     if(functions.find(function) != functions.end()) {
-        throw StateExeption{"The function" + function + " is already determined."};
+        throw StateException{"The function is already determined."};
     }
     functions[function] = pos;
 }

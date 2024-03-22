@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include "parser.h"
 
 int main() {
@@ -11,7 +12,7 @@ int main() {
     try{
         std::vector<Token> tokens = FileParser(file);
         State curState;
-        std::vector<Command *> vec_command;
+        std::vector<std::shared_ptr<Command>> vec_command;
         int begin = vectorCommand(tokens, vec_command, curState);
         curState.SetPos(begin);
 
@@ -20,7 +21,7 @@ int main() {
         }
     }  catch (ParserExeption& error) {
         std::cout << error.what();
-    } catch (StateExeption& error) {
+    } catch (StateException& error) {
         std::cout << error.what();
     }
 
